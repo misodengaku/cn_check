@@ -5,7 +5,8 @@ require 'twitter'
 require 'yaml'
 require 'time'
 
-checkName = "rhe__"
+checkName = ["cn", "rhe__", "se4k", "cn_court_", "cn_scaffold_"]
+#result = []
 #validId = [1300596066]
 
 
@@ -22,19 +23,21 @@ rescue
 	puts "[#{Time.now}]: [ERROR] config file load failed."
 end
 
+text = "[#{Time.now.strftime("%Y/%m/%d %H:%M")}] \n"
+checkName.each { |sname|
+	begin
+		data = Twitter.user(sname)
+		text = text + "#{sname} 生存\n"
+		#result.push("生存")
+		# puts "[#{Time.now.strftime("%Y/%m/%d %H:%M:%S")}]: #{sname}の生存を確認しました。"
+	rescue Twitter::Error::NotFound
+		text = text + "#{sname} 凍結？(404)\n"
+		#result.push("凍結？(404)")
+	rescue Twitter::Error::Forbidden
+		text = text + "#{sname} 凍結？(403)\n"
+		#result.push("凍結？(403)")
+	end
+}
 
-begin
-	cn_data = Twitter.user(checkName)
-	# p cn_data
-	#if cn_data["id"] == 1300596066 then
-		puts "[#{Time.now.strftime("%Y/%m/%d %H:%M:%S")}]: #{checkName}の生存を確認しました。"
-		Twitter.update("[#{Time.now.strftime("%Y/%m/%d %H:%M:%S")}]: #{checkName}の生存を確認しました。")
-	#else
-	#	puts "[#{Time.now.strftime("%Y/%m/%d %H:%M:%S")}]: #{checkName}はBANされました"
-	#	Twitter.update("[#{Time.now.strftime("%Y/%m/%d %H:%M:%S")}]: #{checkName}はBANされました")
-	#end
-rescue Twitter::Error::NotFound
-	Twitter.update("[[#{Time.now.strftime("%Y/%m/%d %H:%M:%S")}]: #{checkName}はBANされました(404)")
-rescue Twitter::Error::Forbidden
-	Twitter.update("[[#{Time.now.strftime("%Y/%m/%d %H:%M:%S")}]: #{checkName}はBANされました(403)")
-end
+
+Twitter.update(text)
